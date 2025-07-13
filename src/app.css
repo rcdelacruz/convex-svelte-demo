@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.container {
+  @apply max-w-4xl mx-auto px-4 py-8;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-md p-6 mb-4;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.loading {
+  @apply animate-pulse;
+}
+
+/* Scrollbar styling */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded hover:bg-gray-400;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Focus styles */
+.input:focus,
+.btn:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* Hover effects */
+.card:hover {
+  @apply shadow-lg transition-shadow duration-200;
+}
+
+/* Status indicators */
+.status-connected {
+  @apply bg-green-100 text-green-800 border-green-200;
+}
+
+.status-disconnected {
+  @apply bg-red-100 text-red-800 border-red-200;
+}
+
+.status-error {
+  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+}
