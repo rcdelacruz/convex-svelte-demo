@@ -4,76 +4,66 @@ export const GET: RequestHandler = async ({ url }) => {
   // Get the last event timestamp from query params
   const since = parseInt(url.searchParams.get('since') || '0');
 
-  // Create a readable stream for SSE
+  // Cloudflare Workers-compatible SSE with proper streaming
+  const encoder = new TextEncoder();
+
   const stream = new ReadableStream({
     start(controller) {
-      let intervalId: NodeJS.Timeout | null = null;
-      let isActive = true;
-      let isClosed = false;
+      let closed = false;
+      let eventCount = 0;
 
-      const safeEnqueue = (data: string) => {
-        if (!isClosed && isActive) {
-          try {
-            controller.enqueue(data);
-          } catch (error) {
-            console.log('Controller closed, stopping SSE');
-            isClosed = true;
-            isActive = false;
-          }
-        }
-      };
-
-      // Send initial connection message
-      safeEnqueue(`data: ${JSON.stringify({ type: 'connected', timestamp: Date.now() })}\n\n`);
-
-      // Poll for new events every 3 seconds
-      intervalId = setInterval(async () => {
-        if (!isActive || isClosed) {
-          if (intervalId) {
-            clearInterval(intervalId);
-          }
-          return;
-        }
-
+      const send = (data: any) => {
+        if (closed) return;
         try {
-          // For now, just send heartbeat and demo events
-          // In a real implementation, you would query your Convex backend here
-          const demoEvents = [
-            {
-              _id: `demo-${Date.now()}`,
-              type: 'heartbeat',
-              timestamp: Date.now(),
-              data: { message: 'System heartbeat' }
-            }
-          ];
-
-          // Send demo events
-          for (const event of demoEvents) {
-            safeEnqueue(`data: ${JSON.stringify(event)}\n\n`);
-          }
+          const message = `data: ${JSON.stringify(data)}\n\n`;
+          controller.enqueue(encoder.encode(message));
+          eventCount++;
         } catch (error) {
-          console.error('SSE Error:', error);
-          safeEnqueue(`data: ${JSON.stringify({
-            type: 'error',
-            message: 'Failed to fetch events',
-            timestamp: Date.now()
-          })}\n\n`);
-        }
-      }, 3000);
-
-      // Cleanup on close
-      return () => {
-        isActive = false;
-        isClosed = true;
-        if (intervalId) {
-          clearInterval(intervalId);
+          console.error('SSE send error:', error);
+          closed = true;
+          try {
+            controller.close();
+          } catch (e) {
+            // Controller already closed
+          }
         }
       };
+
+      // Send initial connection event
+      send({
+        type: 'connected',
+        timestamp: Date.now(),
+        data: { message: 'Connected to SSE endpoint' }
+      });
+
+      // Send periodic heartbeats
+      const sendHeartbeat = () => {
+        if (!closed && eventCount < 10) { // Limit events to prevent infinite loops
+          send({
+            type: 'heartbeat',
+            timestamp: Date.now(),
+            data: { message: `Heartbeat #${eventCount}` }
+          });
+
+          // Schedule next heartbeat
+          setTimeout(sendHeartbeat, 3000);
+        } else if (!closed) {
+          // Close after 10 events or 30 seconds
+          closed = true;
+          try {
+            controller.close();
+          } catch (e) {
+            // Controller already closed
+          }
+        }
+      };
+
+      // Start heartbeat after 1 second
+      setTimeout(sendHeartbeat, 1000);
     },
 
     cancel() {
-      // Stream was cancelled
-      console.log('SSE stream cancelled');
+      console.log('SSE stream cancelled by client');
     }
   });
 
