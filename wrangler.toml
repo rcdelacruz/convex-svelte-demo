@@ -1,0 +1,23 @@
+name = "convex-svelte-demo"
+main = "./.cloudflare/worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+
+# Environment variables for production
+[env.production.vars]
+# Add your production Convex configuration here
+# CONVEX_SELF_HOSTED_URL = "https://your-production-convex-server.com"
+# PUBLIC_CONVEX_URL = "https://your-production-convex-server.com"
+
+# Environment variables for staging
+[env.staging.vars]
+# Add your staging Convex configuration here
+# CONVEX_SELF_HOSTED_URL = "https://your-staging-convex-server.com"
+# PUBLIC_CONVEX_URL = "https://your-staging-convex-server.com"
+
+# Secrets (use wrangler secret put command to set these)
+# CONVEX_SELF_HOSTED_ADMIN_KEY
+# CONVEX_DEPLOY_KEY
