@@ -10,13 +10,13 @@ export const getRecent = query({
   handler: async (ctx, args) => {
     const since = args.since ?? 0;
     const limit = args.limit ?? 10;
-    
+
     let query = ctx.db.query("events");
-    
+
     if (since > 0) {
-      query = query.withIndex("by_timestamp", (q) => q.gt("timestamp", since));
+      query = query.filter((q) => q.gt(q.field("timestamp"), since));
     }
-    
+
     return await query
       .order("desc")
       .take(limit);
@@ -33,15 +33,15 @@ export const getByType = query({
   handler: async (ctx, args) => {
     const since = args.since ?? 0;
     const limit = args.limit ?? 10;
-    
+
     let query = ctx.db
       .query("events")
       .withIndex("by_type", (q) => q.eq("type", args.type));
-    
+
     if (since > 0) {
       query = query.filter((q) => q.gt(q.field("timestamp"), since));
     }
-    
+
     return await query
       .order("desc")
       .take(limit);

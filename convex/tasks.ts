@@ -7,13 +7,16 @@ export const list = query({
     completed: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("tasks");
-    
+    let tasksQuery;
     if (args.completed !== undefined) {
-      query = query.withIndex("by_completed", (q) => q.eq("completed", args.completed));
+      tasksQuery = ctx.db
+        .query("tasks")
+        .withIndex("by_completed", (q) => q.eq("completed", args.completed!));
+    } else {
+      tasksQuery = ctx.db.query("tasks");
     }
-    
-    return await query.order("desc").collect();
+
+    return await tasksQuery.order("desc").collect();
   },
 });
 
@@ -32,7 +35,7 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
     });
-    
+
     // Create an event for SSE
     await ctx.db.insert("events", {
       type: "task_created",
@@ -43,7 +46,7 @@ export const create = mutation({
       },
       timestamp: now,
     });
-    
+
     return taskId;
   },
 });
@@ -58,15 +61,15 @@ export const toggle = mutation({
     if (!task) {
       throw new Error("Task not found");
     }
-    
+
     const updatedTask = {
       ...task,
       completed: !task.completed,
       updatedAt: Date.now(),
     };
-    
+
     await ctx.db.replace(args.id, updatedTask);
-    
+
     // Create an event for SSE
     await ctx.db.insert("events", {
       type: "task_updated",
@@ -76,7 +79,7 @@ export const toggle = mutation({
       },
       timestamp: Date.now(),
     });
-    
+
     return updatedTask;
   },
 });
@@ -88,7 +91,7 @@ export const remove = mutation({
   },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
-    
+
     // Create an event for SSE
     await ctx.db.insert("events", {
       type: "task_deleted",
