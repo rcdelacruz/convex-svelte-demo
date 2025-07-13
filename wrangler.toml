@@ -1,4 +1,4 @@
-name = "convex-svelte-demo"
+name = "convex-svelte-demo-production"
 main = "./.svelte-kit/cloudflare/_worker.js"
 assets = { directory = "./.svelte-kit/cloudflare", binding = "ASSETS" }
 compatibility_date = "2024-09-23"
