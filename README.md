@@ -148,65 +148,77 @@ npm run build
 npm run preview
 ```
 
-## Deploying to Cloudflare Workers
+## Deployment Management System
 
-### Prerequisites
+This project includes a comprehensive deployment management system that handles multiple environments and automates the deployment process.
 
-1. **Cloudflare account** with Workers enabled
-2. **Wrangler CLI** authenticated:
+### Quick Start
+
+```bash
+# Set up environment files (first time only)
+npm run setup:env
+
+# Deploy to production
+npm run deploy:production
+
+# Deploy to staging
+npm run deploy:staging
+
+# Deploy only Convex functions
+npm run deploy:convex prod
+
+# Check deployment status
+npm run deploy:status prod
+```
+
+### Available Deployment Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run setup:env` | Interactive environment setup |
+| `npm run deploy:local` | Local development setup |
+| `npm run deploy:staging` | Deploy to staging |
+| `npm run deploy:production` | Deploy to production |
+| `npm run deploy:convex [env]` | Deploy only Convex functions |
+| `npm run deploy:cf [env]` | Deploy only to Cloudflare Workers |
+| `npm run deploy:status [env]` | Show deployment status |
+
+### Environment Configuration
+
+The deployment system uses environment-specific configuration files:
+
+- **`.env.local`** - Local development
+- **`.env.staging`** - Staging environment
+- **`.env.production`** - Production environment
+
+### First Time Setup
+
+1. **Run the environment setup:**
    ```bash
-   npx wrangler login
+   npm run setup:env
    ```
 
-### Deployment Steps
+2. **Choose your environment** (local/staging/production/all)
 
-1. **Configure your environment variables:**
+3. **Enter your Convex server details** when prompted
 
-   Set your Convex secrets using Wrangler:
+4. **Deploy:**
    ```bash
-   # Set your Convex admin key (required)
-   npx wrangler secret put CONVEX_SELF_HOSTED_ADMIN_KEY
-
-   # Optional: Set deploy key for CI/CD
-   npx wrangler secret put CONVEX_DEPLOY_KEY
-   ```
-
-2. **Update wrangler.toml:**
-
-   Edit the environment variables in `wrangler.toml`:
-   ```toml
-   [env.production.vars]
-   CONVEX_SELF_HOSTED_URL = "https://your-production-convex-server.com"
-   PUBLIC_CONVEX_URL = "https://your-production-convex-server.com"
-   ```
-
-3. **Deploy to Cloudflare Workers:**
-   ```bash
-   # Deploy to default environment
-   npm run deploy
-
-   # Deploy to staging
-   npm run deploy:staging
-
-   # Deploy to production
    npm run deploy:production
    ```
 
-4. **Test your deployment:**
-   ```bash
-   # View live logs
-   npm run cf:tail
+### Manual Deployment (Legacy)
 
-   # Test locally with Cloudflare Workers runtime
-   npm run cf:dev
-   ```
+You can still use the original deployment commands:
 
-### Environment Management
+```bash
+# Deploy to Cloudflare Workers
+npm run deploy              # Default environment
+npm run deploy:staging      # Staging environment
+npm run deploy:production   # Production environment
+```
 
-- **Development**: Use `.env.local` for local development
-- **Staging**: Configure `[env.staging.vars]` in `wrangler.toml`
-- **Production**: Configure `[env.production.vars]` in `wrangler.toml`
-- **Secrets**: Use `wrangler secret put` for sensitive data
+For detailed deployment documentation, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ## Technologies Used
 

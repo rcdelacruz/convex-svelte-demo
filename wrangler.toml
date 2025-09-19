@@ -8,17 +8,25 @@ account_id = "cf535d76fffdb44d43f6a3c00a3ebbe6"
 [build]
 command = "npm run build"
 
-# Environment variables for production
+# Default environment variables (using env vars)
+[vars]
+CONVEX_SELF_HOSTED_URL = "${CONVEX_SELF_HOSTED_URL}"
+PUBLIC_CONVEX_URL = "${PUBLIC_CONVEX_URL}"
+CONVEX_SELF_HOSTED_ADMIN_KEY = "${CONVEX_SELF_HOSTED_ADMIN_KEY}"
+
+# Environment variables for production (using env vars)
 [env.production.vars]
 # Add your production Convex configuration here
-# CONVEX_SELF_HOSTED_URL = "https://your-production-convex-server.com"
-# PUBLIC_CONVEX_URL = "https://your-production-convex-server.com"
+CONVEX_SELF_HOSTED_URL = "${PROD_CONVEX_URL}"
+PUBLIC_CONVEX_URL = "${PROD_CONVEX_URL}"
+CONVEX_SELF_HOSTED_ADMIN_KEY = "${PROD_CONVEX_ADMIN_KEY}"
 
-# Environment variables for staging
+# Environment variables for staging (using env vars)
 [env.staging.vars]
 # Add your staging Convex configuration here
-# CONVEX_SELF_HOSTED_URL = "https://your-staging-convex-server.com"
-# PUBLIC_CONVEX_URL = "https://your-staging-convex-server.com"
+CONVEX_SELF_HOSTED_URL = "${STAGING_CONVEX_URL}"
+PUBLIC_CONVEX_URL = "${STAGING_CONVEX_URL}"
+CONVEX_SELF_HOSTED_ADMIN_KEY = "${STAGING_CONVEX_ADMIN_KEY}"
 
 # Secrets (use wrangler secret put command to set these)
 # CONVEX_SELF_HOSTED_ADMIN_KEY
